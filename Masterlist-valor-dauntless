@@ -1,0 +1,88 @@
+SELECT
+mcl.customer as customer,
+mcl.customer_name as customer_name,
+mcl.customer_address as customer_address,
+mcl.customer_phone as customer_phone,
+mcl.customer_zipcode as customer_Zip,
+mcl.customer_email as customer_email,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN fvd.outcome
+WHEN mcl.sales_team = 'FS2' THEN fdd.outcome
+end as outcome,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN fvd.closer_name
+WHEN mcl.sales_team = 'FS2' THEN fdd.closer_name
+WHEN fvd.closer_name is null THEN mcl.sales_rep
+WHEN fdd.closer_name is null THEN mcl.sales_rep
+end as closer,
+mcl.rep_name as closer,
+sc.rep_id as closer_id,
+mcl.setter_name as setter,
+ss.setter_id as setter_id,
+mcl.sales_office as office,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN fvl.lead_source_type
+WHEN mcl.sales_team = 'FS2' THEN fdl.lead_source_type
+END as lead_source_1,
+mcl.lead_source_type as lead_source,
+mcl.lead_source as setter_2,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN fvd.closer_name
+WHEN mcl.sales_team = 'FS2' THEN fdd.closer_name
+END as created_date,
+mcl.sales_team as region,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN CAST(fvl.created_date as date)
+WHEN mcl.sales_team = 'FS2' THEN CAST(fdl.created_date as date)
+end as created_date,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN CAST(fvl.created_date as time)
+WHEN mcl.sales_team = 'FS2' THEN CAST(fdl.created_date as time)
+end as created_time,
+cast(mcl.date_outcome_updated as date) as appt_date,
+cast(mcl.appointment_date as time) as appt_time,
+CASE
+WHEN mcl.sales_team = 'FS1' THEN CAST(fvl.lead_cancelled_date as date)
+WHEN mcl.sales_team = 'FS2' THEN CAST(fdl.lead_cancelled_date as date)
+end as cancelled_date,
+CAST(mcl.welcome_call_complete_date as DATE) as welcome_call,
+CAST(mcl.contract_signed_date as DATE) as contract_signed,
+cast(mcl.fluent_approved_date as date) as fluent_approved_date,
+CAST(mcl.site_survey_complete_date as DATE) as site_survey,
+CAST(mcl.cad_complete_date as DATE) as cad_complete,
+CAST(mcl.ntp_submitted_date as DATE) as ntp_submitted,
+CAST(mcl.ntp_approved_date as DATE) as ntp_approved,
+CAST(mcl.engineering_complete_date as DATE) as engineering_date,
+CAST(mcl.nem_approved_date as DATE) nem_approved,
+CAST(mcl.nem_submitted_date as DATE) as nem_approved,
+CAST(mcl.permit_submitted_date as DATE) as permit_submitted,
+CAST(mcl.all_permits_approved_date as DATE) as permit_approved,
+CAST(mcl.hoa_submitted_date as DATE) as hoa_submitted,
+CAST(mcl.hoa_approved_date as DATE) as hoa_approved,
+CAST(mcl.scheduled_install_date as DATE) as install_scheduled,
+CAST(mcl.installreadydate3 as DATE) as install_ready_3,
+CAST(mcl.install_complete_date as DATE) as install_complete,
+CAST(mcl.pto_submitted_date as DATE) as pto_submited,
+CAST(mcl.meter_installed_date_pto_received as DATE) as meter_installed,
+CAST(mcl.m1_submitted_date as DATE) as M1_submitted,
+CAST(mcl.m1_received_date as DATE) as M1_recieved,
+mcl.loan_product as loan_product,
+mcl.system_price as loan_price,
+mcl.system_size_kw as system_size
+FROM master_list_masterlistcustomers mcl
+LEFT JOIN fs_valor_deals fvd on fvd.customer = mcl.customer
+LEFT JOIN fs_dauntless_deals fdd on fdd.customer = mcl.customer
+LEFT JOIN fs_dauntless_leads fdl on fdl.customer = mcl.customer
+LEFT JOIN fs_valor_leads fvl on fvl.customer = mcl.customer
+LEFT JOIN setups_salesreps sc on sc.rep_name = mcl.sales_rep
+LEFT JOIN setups_setters ss on ss.setter_name = mcl.setter_name
+LEFT JOIN project_management_designs pmd on pmd.address_212428830 = mcl.customer_address
+Where
+CASE
+WHEN mcl.sales_team = 'FS1' THEN CAST(fvl.created_date as date)
+WHEN mcl.sales_team = 'FS2' THEN CAST(fdl.created_date as date)
+end >= '2021-01-01'
+
+#use DISTINCT(customer)
+
+# Data used to combine masterlist with valor and dauntless lead data. Be wary of duplicates.
