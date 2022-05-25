@@ -1,0 +1,47 @@
+SELECT m.FluentPodioModelId,
+m.customer_name,
+m.customer_address,
+pm.region,
+pm.sales_rep,
+pm.project_stage,
+pm.status,
+pm.system_size,
+pm.system_price,
+pm.loan_type,
+pm.loan_docs_signed
+FROM master_list_masterlistcustomers as m
+LEFT JOIN project_management_funding as pm
+ON m.customer_name = pm.project
+WHERE pm.project_stage IS NOT NULL
+AND pm.status IS NOT NULL
+ORDER BY FluentPodioModelId;
+
+# Will combine masterlist and project management funding 
+
+
+
+# Will take out the results of the code above and leave with unmatched masterlist results
+
+SELECT customer_name, 
+	FluentPodioModelId, 
+	customer, 
+	sales_office
+FROM master_list_masterlistcustomers
+WHERE customer_name NOT IN (
+	SELECT project
+	FROM project_management_funding
+	)
+ORDER BY FluentPodioModelId;
+
+# Will take out the results of the code above and leave with unmatched project management funding results
+
+SELECT project, 
+	FluentPodioModelId 
+FROM project_management_funding
+WHERE project NOT IN (
+	SELECT customer_name
+	FROM project_management_funding
+	)
+ORDER BY FluentPodioModelId;
+
+#All of Project Management Funding is in Masterlist.
