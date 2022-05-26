@@ -86,5 +86,7 @@ AND pp.customer_email IS NOT NULL
 AND pp.region IS NOT NULL
 ORDER BY FluentPodioModelId;
 
-
+# add if you want to filter it by the past week, -42 if 6 weeks.
+AND date(pm.loan_docs_signed_date) >= curdate() - 7
+AND date(pm.loan_docs_signed_date) < curdate()
 
