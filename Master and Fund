@@ -61,3 +61,28 @@ AND pp.region IS NOT NULL
 ORDER BY FluentPodioModelId
 
 # This joins master list and projects
+
+This joins both funding and project with masterlist:
+
+SELECT DISTINCT(m.customer_name),
+	m.FluentPodioModelId,
+	m.customer_address,
+	pp.customer_email,
+	pp.region,
+	pm.project_stage,
+	pm.system_price,
+	pm.status,
+	pm.system_size,
+	pm.loan_type,
+	pm.loan_docs_signed
+FROM master_list_masterlistcustomers as m
+LEFT JOIN project_management_projects as pp
+ON m.customer_name = pp.customer_name
+LEFT JOIN project_management_funding as pm
+ON pp.FluentPodioModelId = pm.FluentPodioModelId
+WHERE m.customer_name IS NOT NULL
+AND pp.customer_email IS NOT NULL
+AND pp.region IS NOT NULL
+ORDER BY FluentPodioModelId;
+
+
