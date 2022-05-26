@@ -90,3 +90,29 @@ ORDER BY FluentPodioModelId;
 AND date(pm.loan_docs_signed_date) >= curdate() - 7
 AND date(pm.loan_docs_signed_date) < curdate()
 
+
+#Use this to categorize date creation based on seasons. Although for some reason this wont work in Tableplus, but works perfectly in PostgreSQL in dbeaver.
+
+with seasons_cte as (
+	select to_char(m.ticket_created_date, 'YYYY') as year,
+	To_char(m.ticket_created_date, 'MM') as month_num,
+	from master_list_masterlistcustomers as m
+	where m.ticket_created_date IS NOT NULL
+	group by to_char(m.ticket_created_date, 'YYYY'),
+		to_char(m.ticket_created_date, 'MM')
+	)
+SELECT YEAR
+CASE WHEN month_num BETWEEN '10' AND '12' THEN 'Fall'
+	WHEN month_num BETWEEN '01' AND '03' THEN 'Winter'
+	WHEN month_num BETWEEN '04' AND '06' THEN 'Spring'
+	WHEN month_num BETWEEN '07' AND '09' THEN 'Summer'
+	END AS season
+FROM seasons_cte
+GROUP BY CASE WHEN month_num BETWEEN '10' AND '12' THEN 'Fall'
+	WHEN month_num BETWEEN '01' AND '03' THEN 'Winter'
+	WHEN month_num BETWEEN '04' AND '06' THEN 'Spring'
+	WHEN month_num BETWEEN '07' AND '09' THEN 'Summer'
+	END
+ORDER BY month_num desc;
+
+
