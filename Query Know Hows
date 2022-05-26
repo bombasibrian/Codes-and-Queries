@@ -1,0 +1,1 @@
+DATE_FORMAT(columnname, '%m/%d,/%Y') ## takes out the time that is sometimes attached to dates.
