@@ -1,0 +1,2 @@
+Total Leads Count = calculate(Count('Master list'[customer]),
+USERELATIONSHIP('Dates Table'[Dates],'Master list'[created_date]))
