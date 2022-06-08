@@ -23,3 +23,6 @@ if(
 ) 
 )
 ))
+
+
+Hours worked = Table.TransformColumns(#"Added Custom3",{{"Hours Worked", Duration.TotalHours, type number}})
