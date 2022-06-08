@@ -1,2 +1,25 @@
 Total Leads Count = calculate(Count('Master list'[customer]),
 USERELATIONSHIP('Dates Table'[Dates],'Master list'[created_date]))
+
+
+
+
+Total Hours Worked = 
+if(
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[closer])) <> BLANK(),
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[closer])),
+if(
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[closer2])) <> BLANK(),
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[closer2])),
+if(
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[setter name])) <> BLANK(),
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[setter name])),
+
+    if(
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[setter_2])) <> BLANK(),
+    CALCULATE(FIRSTNONBLANK('T sheets data'[Hours Worked], 1), FILTER(ALL('T sheets data'), 'T sheets data'[Full Name] = 'Master list'[setter_2]))
+
+
+) 
+)
+))
