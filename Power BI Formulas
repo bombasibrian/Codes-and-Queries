@@ -26,3 +26,5 @@ if(
 
 
 Hours worked = Table.TransformColumns(#"Added Custom3",{{"Hours Worked", Duration.TotalHours, type number}})
+
+Full Name = 'Hired Setters'[First Name]& " " & 'Hired Setters'[Last Name]
