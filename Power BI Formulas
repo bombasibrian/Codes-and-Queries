@@ -28,3 +28,11 @@ if(
 Hours worked = Table.TransformColumns(#"Added Custom3",{{"Hours Worked", Duration.TotalHours, type number}})
 
 Full Name = 'Hired Setters'[First Name]& " " & 'Hired Setters'[Last Name]
+
+
+
+
+Total Hours Worked = 
+if(
+    CALCULATE(FIRSTNONBLANK('Tsheets'[Total Hours], 1), FILTER(ALL('Tsheets'), 'Tsheets'[Full Name] = 'Customer work info'[setter_name])) <> BLANK(),
+    CALCULATE(FIRSTNONBLANK('Tsheets'[Total Hours], 1), FILTER(ALL('Tsheets'), 'Tsheets'[Full Name] = 'Customer work info'[setter_name])))
