@@ -36,3 +36,28 @@ Total Hours Worked =
 if(
     CALCULATE(FIRSTNONBLANK('Tsheets'[Total Hours], 1), FILTER(ALL('Tsheets'), 'Tsheets'[Full Name] = 'Customer work info'[setter_name])) <> BLANK(),
     CALCULATE(FIRSTNONBLANK('Tsheets'[Total Hours], 1), FILTER(ALL('Tsheets'), 'Tsheets'[Full Name] = 'Customer work info'[setter_name])))
+    
+    
+    
+Pre - Pipeline (FA) = 
+calculate(counta('Master List'[sales_rep]),
+'Master List'[fluent_approved_date] <> BLANK(),
+FILTER('Calendar', 'Calendar'[Date] >= date(2022, 1, 1) && 'Calendar'[Date] <= DATE(2022, 6, 14)),
+USERELATIONSHIP('Calendar'[Date],'Master List'[date_lead_submitted]))
+
+
+Rush Comp Count = 
+if(CONTAINSSTRING('Master List'[Rush Comp], "Rush Competition"), 1, 0)
+
+Manager = 
+if(
+    CALCULATE(FIRSTNONBLANK('Valor and Dauntless info'[sales_manager], 1), FILTER(ALL('Valor and Dauntless info'), 'Valor and Dauntless info'[sales_rep]= 'Master List'[sales_rep])) <> BLANK(),
+    CALCULATE(FIRSTNONBLANK('Valor and Dauntless info'[sales_manager], 1), FILTER(ALL('Valor and Dauntless info'), 'Valor and Dauntless info'[sales_rep] = 'Master List'[sales_rep]))
+)
+
+Test Lead Summation = 
+CALCULATE(SUM('Customer work info'[Lead Count, new hire]), filter(ALLEXCEPT('Customer work info','Customer work info'[New hires]), 'Customer work info'[New hires] <> BLANK()))
+
+
+
+
