@@ -92,4 +92,88 @@ let BulkReplace = (DataTable as table, FindReplaceTable as table, DataTableColum
         Output
 in
     BulkReplace
+    
+    
+    
+    
+    
+-----    
+    
+    
+    
+     let
+
+    // How many pay periods do we want to retrieve data for?
+
+    PayPeriods = 4,
+
+
+
+    // Create date table based on number of desired pay periods
+
+    Today = DateTime.Date(DateTime.LocalNow()),
+
+    InitialDate = Date.AddDays( Today, - ( Date.DayOfWeek( Today, Day.Monday ) + (PayPeriods * 7) ) ),
+
+    DateList = List.Generate(
+
+        () => [Date=InitialDate],
+
+        each [Date]<=Date.AddDays( Today, - ( Date.DayOfWeek( Today, Day.Sunday ) ) ),
+
+        each [Date = Date.AddDays( [Date] , 1 )]
+
+    ),
+
+    DateTable = Table.FromList(DateList, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+
+    ExpandedDateTable = Table.ExpandRecordColumn(DateTable, "Column1", {"Date"}, {"Date"}),
+
+   
+
+    // Call the API for each row of the dates table (by splitting up the API calls, we get daily granularity in hourly pay information)
+
+    AddApiResultsColumn = Table.AddColumn(ExpandedDateTable, "ApiResults", each Json.Document(Web.Contents("https://rest.tsheets.com/api/v1/reports/payroll",
+
+        [
+
+            ManualStatusHandling = {417},
+
+            Headers=
+
+            [ #"Authorization"="Bearer S.16__632e426eb43a79c84e9e4206261e650ae2a6ca93",
+
+                #"Content-Type"="application/json"
+
+            ],
+
+            Content=Text.ToBinary("{""data"": {""start_date"": """&Date.ToText([Date], [Format="yyyy-MM-dd"])&""", ""end_date"": """&Date.ToText([Date], [Format="yyyy-MM-dd"])&""", ""advanced_overtime"": ""yes""}}")
+
+        ]
+
+    ))),
+
+
+
+    // Split the API results into two columns of tables, one for the actual hourly payroll entries, and another for the associated supplemental information about the employee
+
+    AddPayrollInfoColumn = Table.AddColumn(AddApiResultsColumn, "PayrollJson", each Table.RemoveColumns(Table.ExpandRecordColumn(Record.ToTable(_[ApiResults][results][payroll_report]), "Value", {"user_id", "client_id", "start_date", "end_date", "total_re_seconds", "total_pto_seconds", "total_work_seconds", "total_paid_break_seconds", "total_unpaid_break_seconds", "pto_seconds", "overtime_seconds", "timesheet_count"}), "Name" )),
+
+    AddEmployeeInfoColumn = Table.AddColumn(AddPayrollInfoColumn, "SuppDataJson", each Table.RemoveColumns(Table.ExpandRecordColumn(Record.ToTable(_[ApiResults][supplemental_data][users]), "Value", {"id", "first_name", "last_name", "display_name", "group_id", "active", "employee_number", "salaried", "exempt", "username", "email", "email_verified", "payroll_id", "hire_date", "term_date", "last_modified", "last_active", "created", "client_url", "company_name", "profile_image_url", "pronouns", "mobile_number", "pto_balances", "submitted_to", "approved_to", "manager_of_group_ids", "require_password_change", "pay_rate", "pay_interval", "permissions", "customfields"}), "Name" )),
+
+
+
+    // Join the associated tables in each row so we end up with a list of tables, each table representing all of the hourly entries for that date as well as the employee information
+
+    JoinTableFromEachRow = Table.TransformRows(AddEmployeeInfoColumn, each Table.Join(_[PayrollJson], "user_id", _[SuppDataJson], "id")),
+
+   
+
+    // Union all of these tables into one big table
+
+    CombineTables = Table.Combine(JoinTableFromEachRow)
+
+in
+
+  CombineTables
 
