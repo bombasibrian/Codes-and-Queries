@@ -1,8 +1,7 @@
 Total Leads Count = calculate(Count('Master list'[customer]),
 USERELATIONSHIP('Dates Table'[Dates],'Master list'[created_date]))
 
-
-
+-----
 
 Total Hours Worked = 
 if(
@@ -24,12 +23,15 @@ if(
 )
 ))
 
+----
 
 Hours worked = Table.TransformColumns(#"Added Custom3",{{"Hours Worked", Duration.TotalHours, type number}})
 
+----
+
 Full Name = 'Hired Setters'[First Name]& " " & 'Hired Setters'[Last Name]
 
-
+----
 
 
 Total Hours Worked = 
@@ -37,6 +39,7 @@ if(
     CALCULATE(FIRSTNONBLANK('Tsheets'[Total Hours], 1), FILTER(ALL('Tsheets'), 'Tsheets'[Full Name] = 'Customer work info'[setter_name])) <> BLANK(),
     CALCULATE(FIRSTNONBLANK('Tsheets'[Total Hours], 1), FILTER(ALL('Tsheets'), 'Tsheets'[Full Name] = 'Customer work info'[setter_name])))
     
+-----
     
     
 Pre - Pipeline (FA) = 
@@ -45,9 +48,13 @@ calculate(counta('Master List'[sales_rep]),
 FILTER('Calendar', 'Calendar'[Date] >= date(2022, 1, 1) && 'Calendar'[Date] <= DATE(2022, 6, 14)),
 USERELATIONSHIP('Calendar'[Date],'Master List'[date_lead_submitted]))
 
+-----
+
 
 Rush Comp Count = 
 if(CONTAINSSTRING('Master List'[Rush Comp], "Rush Competition"), 1, 0)
+
+-----
 
 Manager = 
 if(
@@ -55,9 +62,12 @@ if(
     CALCULATE(FIRSTNONBLANK('Valor and Dauntless info'[sales_manager], 1), FILTER(ALL('Valor and Dauntless info'), 'Valor and Dauntless info'[sales_rep] = 'Master List'[sales_rep]))
 )
 
+-----
+
 Test Lead Summation = 
 CALCULATE(SUM('Customer work info'[Lead Count, new hire]), filter(ALLEXCEPT('Customer work info','Customer work info'[New hires]), 'Customer work info'[New hires] <> BLANK()))
 
+-----
 
 let BulkReplace = (DataTable as table, FindReplaceTable as table, DataTableColumn as list) =>
     let
