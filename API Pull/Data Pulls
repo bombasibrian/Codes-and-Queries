@@ -1,0 +1,43 @@
+import pandas as pd
+import json
+import mysql.connector
+
+mydb = mysql.connector.connect(
+    host = 'fluentsolar-podio.mysql.database.azure.com',
+    database = 'fluentsolarpodiosync',
+    user = 'fluentsolarpodio@fluentsolar-podio',
+    password = '4?tL#Tq!Z!tXwDk'
+)
+
+print(mydb)
+
+mycursor = mydb.cursor()
+sql = ("SELECT master.`Unique ID`, "
+    "master.`Customer Name`, "
+    "master.`Customer Address`, "
+    "master.`Rep Name`, "
+    "master.`Sales Office`, "
+    "master.`System Size (kw)`, "
+    "master.`Lead Source`, "
+    "master.`Lead Source Type`, "
+    "master.`Date Cancelled`, "
+    "master.`On Hold Date`, "
+    "master.`Install Complete Date`, "
+    "permit.permit_submitted_date, "
+    "projects.system_size "
+    
+"FROM  ___cb___master_list_customers_linked_to_project AS master "
+
+"JOIN project_management_permitting AS permit on master.`Customer Name` = permit.project "
+       
+"JOIN project_management_proposals AS projects on master.`Customer Name` = projects.customer_name ")
+
+
+mycursor.execute(sql)
+
+myresult = mycursor.fetchall()
+df = pd.DataFrame(myresult)
+df.columns = ['ID', 'CustomerName', 'CustomerAddress', 'RepName', 'Office', 'SystemSizeKW', 'LeadSource', 'LeadSourceType', 'DateCancelled', 'OnHoldDate', 'InstallCompleteDate', 'PermitSubmittedDate', 'SystemSize']
+
+df.head()
+df.to_csv(r'C:\Users\Bbombasi\OneDrive - Fluent Solar\Desktop\CSVs\Sales_Data.csv')
