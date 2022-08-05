@@ -1,6 +1,0 @@
-MY SQL :DATE_FORMAT(columnname, '%m/%d,/%Y') ## takes out the time that is sometimes attached to dates.
-Postgresql : SELECT CURRENT_TIMESTAMP : : DATE
-
-## turns normal INT columns into $
-MYSQL:  SELECT CONCAT ('$', FORMAT(column_name,2))
-Postgresql:  SELECT column_name: : money
